@@ -46,7 +46,16 @@ void URoom1GameController::TickComponent(float DeltaTime, ELevelTick TickType, F
 		}
 	}
 
-	if(isBegin) AddAnswer();
+	if(isBegin && !isClear) AddAnswer();
+
+	if(isClear)
+	{
+		if(!Room1KeyTrigger->isOnTrigger())
+		{
+			SetStandVisible();
+			SetComponentTickEnabled(false); // Tick 사용 종료.
+		}
+	}
 }
 
 void URoom1GameController::SetEnterTrigger_Room1(UEnterTrigger* NewEnterTrigger) // EnterTrigger 연결
@@ -75,6 +84,10 @@ void URoom1GameController::SetMover_Room1(UMover* NewMover)
 	Mover = NewMover;
 }
 
+void URoom1GameController::SetDeathCount_Room1(UDeathCount* NewDeathCount)
+{
+	DeathCount = NewDeathCount;
+}
 
 void URoom1GameController::SetTorch(TArray<UTorchTimer*> NewTorchs) //Torch 연결
 {
@@ -91,6 +104,20 @@ void URoom1GameController::SetTorch(TArray<UTorchTimer*> NewTorchs) //Torch 연�
 	TorchCount = Torchs.Num(); // 횃불 숫자 기록
 }
 
+void URoom1GameController::SetGargoyleStand(TArray<AActor*> NewGargoyleStands) // Room1 클리어 후 생성되는 가고일 스탠드 연결
+{
+	for(AActor* GargoyleStand : NewGargoyleStands)
+	{
+		GargoyleStands.Add(GargoyleStand);
+	}
+}
+
+void URoom1GameController::SetKeyBoxTrigger(UBoxTriggerComponent* NewRoom1KeyTrigger) // Room1 클리어 후 습득하는 가고일 스탠드 박스 트리거 연결
+{
+	Room1KeyTrigger = NewRoom1KeyTrigger;
+}
+
+
 void URoom1GameController::ShuffleOrder() // 정답 생성
 {
 	if(QuestOrder.Num() <= 0) return;
@@ -104,7 +131,7 @@ void URoom1GameController::ShuffleOrder() // 정답 생성
 
 void URoom1GameController::ShowQuestion() // 문제 출제 시작
 {
-	GetWorld()->GetTimerManager().SetTimer(QuestionTimerHandle, this, &URoom1GameController::RunTorchTimer, QuestionTime, true, 1.0f);
+	GetWorld()->GetTimerManager().SetTimer(QuestionTimerHandle, this, &URoom1GameController::RunTorchTimer, QuestionTime, true);
 }
 
 void URoom1GameController::RunTorchTimer() // TorchTimer 작동
@@ -128,12 +155,14 @@ void URoom1GameController::AddAnswer() // 답변 배열 생성
 		if(AnswerOrder == QuestOrder) // 정답
 		{
 			UE_LOG(LogTemp, Display, TEXT("Correct!"));
-		    SetComponentTickEnabled(false);
+			isClear = true; // 클리어 설정
+			Room1KeyTrigger->TriggerActivate();
 			Mover->OnMove();
 		}
 		else // 오답
 		{
 			UE_LOG(LogTemp, Display, TEXT("inCorrect"));
+			DeathCount->Death();
 			ReturnPotPos();
 			AnswerOrder.Empty();
 		}
@@ -162,6 +191,14 @@ void URoom1GameController::ReturnPotPos() // Pot 원위치
 		}
 		Pots[i]->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		Pots[i]->SetActorLocation(OriginalPotPos[i]);
+	}
+}
+
+void URoom1GameController::SetStandVisible() // Room1 가고일 스탠드 활성화
+{
+	for(AActor* GargoyleStand : GargoyleStands)
+	{
+		GargoyleStand->SetActorHiddenInGame(false);
 	}
 }
 

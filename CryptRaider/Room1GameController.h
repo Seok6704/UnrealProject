@@ -8,6 +8,7 @@
 #include "TorchTimer.h"
 #include "BoxTriggerComponent.h"
 #include "Mover.h"
+#include "DeathCount.h"
 #include "Room1GameController.generated.h"
 
 
@@ -43,10 +44,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMover_Room1(UMover* Mover);
 
+	UFUNCTION(BlueprintCallable)
+	void SetDeathCount_Room1(UDeathCount* DeathCount);
+
+	UFUNCTION(BlueprintCallable)
+	void SetGargoyleStand(TArray<AActor*> GargoyleStands);
+
+	UFUNCTION(BlueprintCallable)
+	void SetKeyBoxTrigger(UBoxTriggerComponent* Room1KeyTrigger);
+
 private:
 	UEnterTrigger* EnterTrigger;
 
+	TArray<AActor*> GargoyleStands;
+
+	UBoxTriggerComponent* Room1KeyTrigger;
+
 	UMover* Mover;
+
+	UDeathCount* DeathCount;
 
 	TArray<UBoxTriggerComponent*> BoxTrigger;
 
@@ -80,4 +96,8 @@ private:
 	TArray<AActor*> Pots;
 
 	TArray<FVector> OriginalPotPos;
+
+	void SetStandVisible();
+
+	bool isClear = false;
 };

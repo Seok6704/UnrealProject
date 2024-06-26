@@ -33,7 +33,7 @@ public:
 private:
 
 	UPROPERTY(EditAnywhere)
-	FRotator OpenOffset = FRotator(0, 80, 0);
+	FRotator OpenOffset = FRotator(0, 120, 0);
 
 	UPROPERTY(EditAnywhere)
 	float OpenTime = 5000;

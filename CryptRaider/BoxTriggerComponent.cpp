@@ -31,7 +31,7 @@ void UBoxTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	AActor* Actor = GetAcceptableActor();
-    if(Actor != nullptr && !isOper)
+    if(Actor != nullptr)
     {
         UPrimitiveComponent* Component = Cast<UPrimitiveComponent>(Actor->GetRootComponent());
         if(Component != nullptr)

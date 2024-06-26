@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/BoxComponent.h"
-#include "BoxTriggerComponent.generated.h"
+#include "Components/ActorComponent.h"
+#include "DeathCount.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CRYPTRAIDER_API UBoxTriggerComponent : public UBoxComponent
+class CRYPTRAIDER_API UDeathCount : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UBoxTriggerComponent();
+	UDeathCount();
 
 protected:
 	// Called when the game starts
@@ -24,17 +24,14 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	bool isOnTrigger() const;
-
-	void TriggerActivate();
+	void Death();
 
 private:
-
 	UPROPERTY(EditAnywhere)
-	bool isOper = false; // 트리거 동작 여부
+	int32 TotalDeathCount = 9;
 
-	UPROPERTY(EditAnywhere)
-	FName AcceptableActorTag;
+	TArray<UStaticMeshComponent*> DeathCounts;
 
-	AActor* GetAcceptableActor() const;
+	void SetDeathCount();
+		
 };
